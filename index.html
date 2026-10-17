@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#020805">
+<title>Hacker King | Screen Studio</title>
+<style>
+:root{--bg:#020805;--panel:#09140e;--green:#00ff77;--muted:#91aa9b;--border:#17462d}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#10351e 0%,#020805 60%);color:#eaffef;font-family:system-ui,Arial,sans-serif}
+header{text-align:center;padding:26px 15px 18px;border-bottom:1px solid var(--border)}
+.logo{width:70px;height:70px;border:2px solid var(--green);border-radius:20px;display:grid;place-items:center;margin:auto;font-size:28px;font-weight:900;color:var(--green);box-shadow:0 0 25px #00ff7730}
+h1{font-size:24px;margin:12px 0 3px;letter-spacing:1px}
+h1 span,.green{color:var(--green)}
+header p,.muted{color:var(--muted);font-size:13px}
+main{width:min(900px,94%);margin:20px auto 100px}
+.panel{background:linear-gradient(145deg,#0b1b11,#050b07);border:1px solid var(--border);border-radius:17px;padding:18px;margin-bottom:15px;box-shadow:0 8px 30px #0004}
+h2{font-size:16px;margin:0 0 14px}
+.status{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:13px}
+.dot{width:9px;height:9px;background:#61756a;border-radius:50%}
+.dot.live{background:var(--green);box-shadow:0 0 12px var(--green)}
+button,select,input{font:inherit}
+button{border:1px solid var(--border);background:#102419;color:#eaffef;padding:12px 14px;border-radius:10px;cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:active{transform:scale(.98)}
+.primary{background:var(--green);color:#001b0a;font-weight:800;border-color:var(--green)}
+.danger{border-color:#733434;color:#ff9999;background:#281010}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.controls button{width:100%}
+.full{width:100%;margin-top:10px}
+.note{font-size:12px;line-height:1.6;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.voice{padding:12px 5px;font-size:12px;min-height:58px}
+.voice.active{border-color:var(--green);background:#123b22;color:var(--green);box-shadow:inset 0 0 0 1px var(--green)}
+label{display:block;font-size:13px;color:var(--muted);margin:13px 0 7px}
+input[type=range]{width:100%;accent-color:var(--green)}
+select{width:100%;padding:12px;background:#07110a;color:white;border:1px solid var(--border);border-radius:9px}
+.preview{width:100%;max-height:340px;background:#000;border-radius:10px;margin-top:12px}
+#timer{font-size:32px;color:var(--green);font-variant-numeric:tabular-nums;margin:12px 0}
+#result a{color:var(--green);overflow-wrap:anywhere}
+.float{position:fixed;right:12px;bottom:18px;z-index:10;border-radius:30px;padding:12px 17px;background:#00ff77;color:#001b0a;font-weight:900;box-shadow:0 0 22px #00ff7744}
+footer{text-align:center;padding:25px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+hr{border:0;border-top:1px solid var(--border);margin:17px 0}
+@media(min-width:650px){.grid{grid-template-columns:repeat(5,minmax(0,1fr))}.controls{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">HK</div>
+  <h1>HACKER KING <span>STUDIO</span></h1>
+  <p>Created by Muhammad Jameer · Smart Bano. Secure Raho.</p>
+  <div class="status" style="justify-content:center">
+    <span class="dot" id="dot"></span><span id="status">Ready to record</span>
+  </div>
+</header>
+
+<main>
+<section class="panel">
+  <h2>◉ Screen Recorder</h2>
+  <div class="note">Choose a recording mode. Browser screen capture requires your permission every time.</div>
+  <label for="mode">Recording source</label>
+  <select id="mode">
+    <option value="screen">Screen + optional microphone</option>
+    <option value="silent">Screen only — no microphone</option>
+  </select>
+  <div class="controls" style="margin-top:14px">
+    <button class="primary" id="start">▶ Start Recording</button>
+    <button id="pause" disabled>Ⅱ Pause</button>
+    <button class="danger" id="stop" disabled>■ Stop & Save</button>
+    <button id="mic" disabled>🎙 Mic: ON</button>
+  </div>
+  <div id="timer">00:00</div>
+  <div class="note">Tip: Select “Entire screen” in the browser dialog if available. Some Android browsers do not support screen recording.</div>
+</section>
+
+<section class="panel">
+  <h2>🎚 Voice Effects — 15 Modes</h2>
+  <p class="note">Effects apply to your microphone audio in the recording, where supported. They do not change your voice in other apps or phone calls.</p>
+  <div class="grid" id="voices"></div>
+  <label for="pitch">Effect pitch</label>
+  <input id="pitch" type="range" min="-12" max="12" value="0">
+  <div class="note">Pitch adjustment: <span id="pitchValue">0</span> semitones</div>
+  <label for="volume">Microphone level</label>
+  <input id="volume" type="range" min="0" max="150" value="100">
+  <div class="note">Level: <span id="volumeValue">100%</span></div>
+  <button id="test" class="full">🎧 Test microphone effect</button>
+  <button id="stopTest" class="full" disabled>Stop microphone test</button>
+  <p class="note">Use headphones to reduce feedback. Browser microphone access is required to test effects.</p>
+</section>
+
+<section class="panel">
+  <h2>📁 Recording Preview & Save</h2>
+  <video id="preview" class="preview" controls playsinline></video>
+  <div id="result" class="note">Your saved recording will appear here.</div>
+  <button id="download" class="primary full" disabled>⬇ Download Video</button>
+  <button id="discard" class="danger full" disabled>Delete current recording</button>
+  <p class="note">Keep important videos saved before leaving this page. Large recordings use phone storage and memory.</p>
+</section>
+
+<section class="panel">
+  <h2>🛡 Privacy & Permissions</h2>
+  <p class="note">• Screen sharing starts only after your action and browser approval.</p>
+  <p class="note">• Silent mode does not request microphone access.</p>
+  <p class="note">• This page does not upload your recordings to a server.</p>
+  <p class="note">• Stop recording before opening private messages, passwords or sensitive information.</p>
+</section>
+</main>
+
+<button class="float" id="quick" title="Stop or resume recording">● Studio</button>
+<footer>HACKER KING SYBER ACADEMY<br>Created By Muhammad Jameer</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const names = [
+ ["Normal","normal"],["Deep Voice","deep"],["High Voice","high"],
+ ["Robot","robot"],["Alien","alien"],["Echo","echo"],
+ ["Telephone","phone"],["Radio","radio"],["Bass","bass"],
+ ["Chipmunk","chip"],["Cave","cave"],["Metallic","metal"],
+ ["Soft","soft"],["Dark","dark"],["Space","space"]
+];
+
+let screenStream=null,micStream=null,recorder=null,chunks=[];
+let audioCtx=null,micSource=null,voiceGain=null,filter=null,shaper=null,delay=null,feedback=null;
+let recording=false,paused=false,micEnabled=true,selected="normal";
+let startAt=0,elapsed=0,timerLoop=null,blobURL=null,testStream=null,testAudio=null;
+let audioDestination=null;
+
+names.forEach(([name,id])=>{
+ const b=document.createElement("button");
+ b.className="voice"+(id===selected?" active":"");
+ b.textContent=name;
+ b.onclick=()=>{selected=id;document.querySelectorAll(".voice").forEach(x=>x.classList.remove("active"));b.classList.add("active");applyEffect();};
+ $("voices").appendChild(b);
+});
+
+function setStatus(text,live=false){$("status").textContent=text;$("dot").classList.toggle("live",live)}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(Math.floor(s%60)).padStart(2,"0")}
+function updateTimer(){let t=elapsed+(recording&&!paused?(Date.now()-startAt)/1000:0);$("timer").textContent=fmt(t)}
+function startClock(){startAt=Date.now();clearInterval(timerLoop);timerLoop=setInterval(updateTimer,300)}
+function pauseClock(){elapsed+=(Date.now()-startAt)/1000;clearInterval(timerLoop);updateTimer()}
+
+async function initMic(){
+ if(micStream)return;
+ micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+ audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+ await audioCtx.resume();
+ micSource=audioCtx.createMediaStreamSource(micStream);
+ voiceGain=audioCtx.createGain();
+ filter=audioCtx.createBiquadFilter();
+ shaper=audioCtx.createWaveShaper();
+ delay=audioCtx.createDelay(1);
+ feedback=audioCtx.createGain();
+ audioDestination=audioCtx.createMediaStreamDestination();
+ micSource.connect(filter);
+ filter.connect(shaper);
+ shaper.connect(delay);
+ delay.connect(feedback);
+ feedback.connect(delay);
+ // Dry voice remains audible in the recording.
+ const dry=audioCtx.createGain();dry.gain.value=1;
+ shaper.connect(dry);dry.connect(voiceGain);
+ delay.connect(voiceGain);
+ voiceGain.connect(audioDestination);
+ applyEffect();
+}
+
+function applyEffect(){
+ if(!audioCtx||!filter||!shaper)return;
+ const presets={
+ normal:[1000,0,0],deep:[260,-4,0],high:[2400,4,0],
+ robot:[700,0,0],alien:[1800,7,0],echo:[1000,0,.25],
+ phone:[1200,0,0],radio:[1600,0,0],bass:[180,-2,0],
+ chip:[2600,8,0],cave:[800,-1,.45],metal:[2100,2,.12],
+ soft:[500,-1,0],dark:[300,-3,.08],space:[1500,2,.35]
+ };
+ const p=presets[selected]||presets.normal;
+ filter.type=(selected==="phone"||selected==="radio")?"bandpass":"lowpass";
+ filter.frequency.value=p[0];
+ filter.Q.value=(selected==="phone"||selected==="radio")?1.2:.7;
+ const shift=Number($("pitch").value);
+ // Approximate pitch/tone colour with EQ; this is not a full pitch shifter.
+ filter.detune.value=shift*35;
+ voiceGain.gain.value=micEnabled?Number($("volume").value)/100:0;
+ delay.delayTime.value=p[2]?0.18:0.001;
+ feedback.gain.value=p[2];
+ const curve=new Float32Array(44100);
+ for(let i=0;i<curve.length;i++){
+  let x=i*2/curve.length-1;
+  curve[i]=selected==="robot"?Math.tanh(x*7):
+   selected==="metal"?Math.tanh(x*3):
+   selected==="soft"?x*.6:x;
+ }
+ shaper.curve=curve;
+}
+
+$("pitch").oninput=()=>{$("pitchValue").textContent=$("pitch").value;applyEffect()};
+$("volume").oninput=()=>{$("volumeValue").textContent=$("volume").value+"%";applyEffect()};
+
+async function start(){
+ if(!navigator.mediaDevices?.getDisplayMedia||!window.MediaRecorder){
+  alert("Screen recording is not supported in this browser. Try a compatible browser on HTTPS.");return;
+ }
+ $("start").disabled=true;
+ try{
+  const silent=$("mode").value==="silent";
+  // Ask for screen sharing directly from the user action.
+  screenStream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
+  let tracks=[...screenStream.getVideoTracks()];
+  if(!silent){
+   try{
+    await initMic();
+    if(audioDestination)tracks.push(...audioDestination.stream.getAudioTracks());
+   }catch(e){alert("Microphone unavailable. Recording will continue without microphone.");}
+  }
+  const combined=new MediaStream(tracks);
+  const mime=["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"].find(x=>MediaRecorder.isTypeSupported(x));
+  recorder=new MediaRecorder(combined,mime?{mimeType:mime}:undefined);
+  chunks=[];
+  recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  recorder.onstop=()=>{
+   const blob=new Blob(chunks,{type:recorder.mimeType||"video/webm"});
+   if(blobURL)URL.revokeObjectURL(blobURL);
+   blobURL=URL.createObjectURL(blob);
+   $("preview").src=blobURL;
+   $("download").disabled=false;$("discard").disabled=false;
+   $("result").textContent="Recording ready · "+(blob.size/1024/1024).toFixed(2)+" MB";
+   $("download").onclick=()=>{
+    const a=document.createElement("a");a.href=blobURL;
+    a.download="HackerKing-"+new Date().toISOString().replace(/[:.]/g,"-")+".webm";
+    a.click();
+   };
+   setStatus("Recording saved locally");
+   $("start").disabled=false;$("pause").disabled=true;$("stop").disabled=true;$("mic").disabled=true;
+  };
+  recorder.start(1000);
+  recording=true;paused=false;elapsed=0;startClock();
+  $("pause").disabled=false;$("stop").disabled=false;$("mic").disabled=silent;
+  $("pause").textContent="Ⅱ Pause";
+  $("mic").textContent=micEnabled?"🎙 Mic: ON":"🔇 Mic: OFF";
+  setStatus("Recording screen",true);
+  screenStream.getVideoTracks()[0].addEventListener("ended",stop);
+ }catch(e){
+  $("start").disabled=false;setStatus("Ready to record");
+  if(e.name!=="NotAllowedError")alert("Could not start recording: "+e.message);
+ }
+}
+function pause(){
+ if(!recorder||!recording)return;
+ if(!paused){recorder.pause();paused=true;pauseClock();$("pause").textContent="▶ Resume";setStatus("Recording paused")}
+ else{recorder.resume();paused=false;startClock();$("pause").textContent="Ⅱ Pause";setStatus("Recording screen",true)}
+}
+function stop(){
+ if(recorder&&recorder.state!=="inactive")recorder.stop();
+ recording=false;paused=false;clearInterval(timerLoop);
+ if(screenStream){screenStream.getTracks().forEach(t=>t.stop());screenStream=null}
+ setStatus("Finishing recording…");
+}
+$("start").onclick=start;
+$("pause").onclick=pause;
+$("stop").onclick=stop;
+$("mic").onclick=()=>{
+ micEnabled=!micEnabled;applyEffect();
+ $("mic").textContent=micEnabled?"🎙 Mic: ON":"🔇 Mic: OFF";
+};
+$("quick").onclick=()=>{
+ if(recording)pause();
+ else if(recorder&&recorder.state==="paused")pause();
+ else window.scrollTo({top:0,behavior:"smooth"});
+};
+$("discard").onclick=()=>{
+ if(!confirm("Delete this recording from the page? Downloaded copies will remain."))return;
+ $("preview").removeAttribute("src");$("preview").load();
+ if(blobURL)URL.revokeObjectURL(blobURL);
+ blobURL=null;chunks=[];$("result").textContent="Recording deleted from this page.";
+ $("download").disabled=true;$("discard").disabled=true;
+};
+$("test").onclick=async()=>{
+ try{
+  await initMic();
+  if(testAudio){testAudio.disconnect();testAudio=null}
+  testAudio=audioCtx.createGain();testAudio.gain.value=.7;
+  voiceGain.connect(testAudio);testAudio.connect(audioCtx.destination);
+  $("test").disabled=true;$("stopTest").disabled=false;
+ }catch(e){alert("Microphone permission is needed to test voice effects.")}
+};
+$("stopTest").onclick=()=>{
+ if(testAudio){testAudio.disconnect();testAudio=null}
+ $("test").disabled=false;$("stopTest").disabled=true;
+};
+window.addEventListener("beforeunload",e=>{
+ if(recording){e.preventDefault();e.returnValue=""}
+});
+</script>
+</body>
+</html>
